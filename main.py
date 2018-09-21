@@ -1,4 +1,5 @@
 import os
+from string import ascii_lowercase
 
 session_length = 30
 num_activities = 1
@@ -7,13 +8,11 @@ def display_intro():
     print("Welcome to Activity Roulette\n")
 
 def prompt_initiate():
-    print("[a] Perform Activities")
-    print("[b] Add Tasks")
-    print("[q] Exit")
+    display_options(["Perform Activities", "Add Tasks"])
 
     user_input = raw_input("Select option: ")
     if user_input.lower() == "a" or len(user_input) < 1:
-        prompt_length()
+        prompt_select_length()
     elif user_input.lower() == "b":
         prompt_add_tasks()
     elif user_input.lower() == "q":
@@ -22,7 +21,7 @@ def prompt_initiate():
         print("Invalid input.")
         prompt_initiate()
 
-def prompt_length():
+def prompt_select_length():
     print("LENGTH")
 
 def prompt_add_tasks():
@@ -43,6 +42,11 @@ def load_from_file(file_name):
 
 def clear():
     os.system('clear')
+
+def display_options(options):
+    for index, value in enumerate(options):
+        print("[" + ascii_lowercase[index] + "] " + value)
+    print("[q] Exit")
 
 def main():
     display_intro()
