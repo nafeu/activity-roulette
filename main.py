@@ -5,8 +5,7 @@ session_length = 25
 num_activities = 1
 
 def prompt_initiate():
-    display_options("Welcome to Activity Roulette",
-                    ["Perform Activities", "Add Tasks"])
+    display_options("", ["Perform Activities", "Add Tasks"])
 
     user_input = raw_input(": ")
     if user_input.lower() == "a" or len(user_input) < 1:
@@ -22,7 +21,7 @@ def prompt_initiate():
 def prompt_select_length():
     global session_length
 
-    display_options("Select session length",
+    display_options("Session length",
                     ["10", "15", "25", "60"])
 
     valid = True
@@ -51,7 +50,7 @@ def prompt_select_length():
 def prompt_select_num_activities():
     global num_activities
 
-    display_options("Select the number of activites you would like to complete",
+    display_options("# of activities",
                     ["1", "2", "3", "4"])
 
     valid = True
@@ -111,11 +110,13 @@ def clear():
     os.system('clear')
 
 def display_options(info, options):
+    output = ""
     if (len(info) > 0):
-        print(info + "\n")
+        output += info
     for index, value in enumerate(options):
-        print("[" + ascii_lowercase[index] + "] " + value)
-    print("[q] Exit")
+        output += "    [" + ascii_lowercase[index] + "] " + value
+    output = output.lstrip()
+    print(output)
 
 def main():
     prompt_initiate()
