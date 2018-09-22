@@ -5,10 +5,14 @@ session_length = 25
 num_activities = 1
 
 def prompt_initiate():
-    display_options("", ["Perform Activities", "Add Tasks"])
+    display_options("Select option",
+                    ["Perform Activities", "Add Tasks"])
 
-    user_input = raw_input(": ")
-    if user_input.lower() == "a" or len(user_input) < 1:
+    user_input = raw_input(get_prompt())
+    if len(user_input) < 1:
+        print("(Performing activities)")
+        prompt_select_length()
+    elif user_input.lower() == "a":
         prompt_select_length()
     elif user_input.lower() == "b":
         prompt_add_tasks()
@@ -21,13 +25,13 @@ def prompt_initiate():
 def prompt_select_length():
     global session_length
 
-    display_options("Session length",
+    display_options("Choose session length",
                     ["10", "15", "25", "60"])
 
     valid = True
-    user_input = raw_input(": ")
+    user_input = raw_input(get_prompt())
     if (len(user_input) < 1):
-        pass
+        print("(Default session length: " + str(session_length) + " minutes)")
     elif user_input.lower() == "a":
         session_length = 10
     elif user_input.lower() == "b":
@@ -50,13 +54,13 @@ def prompt_select_length():
 def prompt_select_num_activities():
     global num_activities
 
-    display_options("# of activities",
+    display_options("Choose number of activities",
                     ["1", "2", "3", "4"])
 
     valid = True
-    user_input = raw_input(": ")
+    user_input = raw_input(get_prompt())
     if (len(user_input) < 1):
-        pass
+        print("(Default number of activities: " + str(num_activities) + ")")
     elif user_input.lower() == "a":
         num_activities = 1
     elif user_input.lower() == "b":
@@ -112,11 +116,17 @@ def clear():
 def display_options(info, options):
     output = ""
     if (len(info) > 0):
-        output += info
+        output += info + ":"
     for index, value in enumerate(options):
-        output += "    [" + ascii_lowercase[index] + "] " + value
+        output += get_divider() + "[" + ascii_lowercase[index] + "] " + value
     output = output.lstrip()
     print(output)
+
+def get_divider():
+    return "  "
+
+def get_prompt():
+    return "> "
 
 def main():
     prompt_initiate()
