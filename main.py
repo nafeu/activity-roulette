@@ -1,12 +1,16 @@
 import os
 from string import ascii_lowercase
 
-session_length = 25
-num_activities = 1
+DEFAULT_SESSION_LENGTH = 25
+DEFAULT_NUM_ACTIVITIES = 1
+
+session_length = DEFAULT_SESSION_LENGTH
+num_activities = DEFAULT_NUM_ACTIVITIES
 
 def prompt_initiate():
-    display_options("Select option",
-                    ["Perform Activities", "Add Tasks"])
+    print("Welcome to Activity Roulette! What would you like to do?")
+
+    display_options(["Perform Activities", "Add Tasks"])
 
     user_input = raw_input(get_prompt())
     if len(user_input) < 1:
@@ -25,13 +29,14 @@ def prompt_initiate():
 def prompt_select_length():
     global session_length
 
-    display_options("Choose session length",
-                    ["10", "15", "25", "60"])
+    print("\nHow long do you want to work for?")
+
+    display_options(["10", "15", "25", "60"])
 
     valid = True
     user_input = raw_input(get_prompt())
     if (len(user_input) < 1):
-        print("(Default session length: " + str(session_length) + " minutes)")
+        print("(Session length: " + str(session_length) + " minutes)")
     elif user_input.lower() == "a":
         session_length = 10
     elif user_input.lower() == "b":
@@ -54,21 +59,14 @@ def prompt_select_length():
 def prompt_select_num_activities():
     global num_activities
 
-    display_options("Choose number of activities",
-                    ["1", "2", "3", "4"])
+    print("\nHow many activities do you want to try?")
 
     valid = True
     user_input = raw_input(get_prompt())
     if (len(user_input) < 1):
-        print("(Default number of activities: " + str(num_activities) + ")")
-    elif user_input.lower() == "a":
-        num_activities = 1
-    elif user_input.lower() == "b":
-        num_activities = 2
-    elif user_input.lower() == "c":
-        num_activities = 3
-    elif user_input.lower() == "d":
-        num_activities = 4
+        print("(Number of activities: " + str(num_activities) + ")")
+    elif user_input.lower() == "q":
+        exit()
     elif is_int(user_input):
         num_activities = int(user_input)
     else:
@@ -98,11 +96,11 @@ def prompt_add_tasks():
     print("ADD TASKS")
 
 def prompt_yes_no(prompt_text):
-  user_input = raw_input(prompt_text).lower()
-  if (user_input == "y" or user_input == "yes" or len(user_input) == 0):
-      return True
-  else:
-      return False
+    user_input = raw_input(prompt_text).lower()
+    if (user_input == "y" or user_input == "yes" or len(user_input) == 0):
+        return True
+    else:
+        return False
 
 def load_from_file(file_name):
     with open("activities.txt") as f:
@@ -113,13 +111,11 @@ def load_from_file(file_name):
 def clear():
     os.system('clear')
 
-def display_options(info, options):
-    output = ""
-    if (len(info) > 0):
-        output += info + ":"
+def display_options(options):
+    output = "\n"
     for index, value in enumerate(options):
-        output += get_divider() + "[" + ascii_lowercase[index] + "] " + value
-    output = output.lstrip()
+        output += "[" + ascii_lowercase[index] + "] " + value + "\n"
+    output = output.rstrip()
     print(output)
 
 def get_divider():
