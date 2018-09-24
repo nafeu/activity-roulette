@@ -1,11 +1,14 @@
 import os
+import random
 from string import ascii_lowercase
 
 DEFAULT_SESSION_LENGTH = 25
 DEFAULT_NUM_ACTIVITIES = 1
+DEFAULT_RANDOM_ACTIVITY_AMOUNT = 5
 
 session_length = DEFAULT_SESSION_LENGTH
 num_activities = DEFAULT_NUM_ACTIVITIES
+shortlist = []
 
 def prompt_initiate():
     print("Welcome to Activity Roulette! What would you like to do?")
@@ -76,11 +79,33 @@ def prompt_select_num_activities():
         display_invalid_input()
         prompt_select_num_activities()
     else:
-        dump_values()
+        prompt_arrange_shortlist()
 
-def dump_values():
-    print(session_length)
-    print(num_activities)
+def prompt_arrange_shortlist():
+    global shortlist
+
+    print("\nArrange your shortlist:")
+
+    display_activity_list()
+
+    user_input = raw_input(get_prompt())
+    if (len(user_input) < 1):
+        shortlist = get_random_activities(DEFAULT_RANDOM_ACTIVITY_AMOUNT)
+    else:
+        shortlist = get_shortlist_by_input(user_input)
+
+    print(shortlist)
+
+def get_shortlist_by_input(user_input):
+    ids = list(set(user_input.split(" ")))
+    activities = load_from_file("activities.txt")
+    output = []
+    for item in ids:
+        if is_int(item):
+            index = int(item)
+            if index >= 0 and index < len(activities):
+                output.append(activities[index])
+    return output
 
 def is_int(input_string):
     try:
@@ -107,6 +132,18 @@ def load_from_file(file_name):
         content = f.readlines()
     content = [x.strip() for x in content]
     return content
+
+def display_activity_list():
+    activities = load_from_file("activities.txt")
+    print("")
+    for index, value in enumerate(activities):
+        print("[" + str(index) + "] " + value)
+
+def get_random_activities(amount):
+    activities = load_from_file("activities.txt")
+    if (amount > len(activities)):
+        return activities
+    return random.sample(activities, amount)
 
 def clear():
     os.system('clear')
