@@ -1,6 +1,7 @@
 import os
 import random
 from string import ascii_lowercase
+from time import sleep
 
 DEFAULT_SESSION_LENGTH = 25
 DEFAULT_NUM_ACTIVITIES = 1
@@ -9,6 +10,10 @@ DEFAULT_RANDOM_ACTIVITY_AMOUNT = 5
 session_length = DEFAULT_SESSION_LENGTH
 num_activities = DEFAULT_NUM_ACTIVITIES
 shortlist = []
+queue = [
+
+]
+log_message = ""
 
 def prompt_initiate():
     print("Welcome to Activity Roulette! What would you like to do?")
@@ -94,7 +99,38 @@ def prompt_arrange_shortlist():
     else:
         shortlist = get_shortlist_by_input(user_input)
 
-    print(shortlist)
+    create_queue()
+    prompt_prepare_to_start()
+
+def prompt_prepare_to_start():
+    global log_message
+    global queue
+
+    print("\nPrepare your activity area. Are ready for a spin?")
+    log_message = raw_input(get_prompt())
+
+    while len(queue) > 0:
+        print("........................\n....... SPINNING .......\n........................")
+        sleep(3)
+        print(".##..##...####...##..##.\n..####...##..##..##..##.\n...##....##..##..##..##.\n...##....##..##..##..##.\n...##.....####....####..\n........................")
+        sleep(0.5)
+        print("..####....####...######.\n.##......##..##....##...\n.##.###..##..##....##...\n.##..##..##..##....##...\n..####....####.....##...\n........................")
+        sleep(0.5)
+        print("\n >>> [ " + queue.pop()['name'] + " ] <<<\n")
+        raw_input(get_prompt())
+
+def create_queue():
+    global num_activities
+
+    random.shuffle(shortlist)
+    while num_activities > 0 and len(shortlist) > 0:
+        work_item = {
+            "complete": False,
+            "name": shortlist.pop(),
+            "message": log_message
+        }
+        queue.insert(0, work_item)
+        num_activities -= 1
 
 def get_shortlist_by_input(user_input):
     ids = list(set(user_input.split(" ")))
