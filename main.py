@@ -14,25 +14,6 @@ shortlist = []
 queue = []
 
 def prompt_initiate():
-    print("Welcome to Activity Roulette! What would you like to do?")
-
-    display_options(["Perform Activities", "Add Tasks"])
-
-    user_input = raw_input(get_prompt())
-    if len(user_input) < 1:
-        print("(Performing activities)")
-        prompt_select_length()
-    elif user_input.lower() == "a":
-        prompt_select_length()
-    elif user_input.lower() == "b":
-        prompt_add_tasks()
-    elif user_input.lower() == "q":
-        exit()
-    else:
-        display_invalid_input()
-        prompt_initiate()
-
-def prompt_select_length():
     global session_length
 
     print("\nHow long do you want to work for?")
@@ -58,7 +39,7 @@ def prompt_select_length():
 
     if not valid:
         display_invalid_input()
-        prompt_select_length()
+        prompt_initiate()()
     else:
         prompt_select_num_activities()
 
@@ -206,6 +187,7 @@ def get_prompt():
     return "> "
 
 def main():
+    print("Welcome to Activity Roulette!")
     prompt_initiate()
 
 if __name__ == '__main__':
