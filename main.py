@@ -1,5 +1,6 @@
 import os
 import random
+import datetime
 from string import ascii_lowercase
 from time import sleep
 
@@ -10,10 +11,7 @@ DEFAULT_RANDOM_ACTIVITY_AMOUNT = 5
 session_length = DEFAULT_SESSION_LENGTH
 num_activities = DEFAULT_NUM_ACTIVITIES
 shortlist = []
-queue = [
-
-]
-log_message = ""
+queue = []
 
 def prompt_initiate():
     print("Welcome to Activity Roulette! What would you like to do?")
@@ -103,21 +101,31 @@ def prompt_arrange_shortlist():
     prompt_prepare_to_start()
 
 def prompt_prepare_to_start():
-    global log_message
     global queue
 
-    print("\nPrepare your activity area. Are ready for a spin?")
-    log_message = raw_input(get_prompt())
+    raw_input("\n[ Prepare your activity area. Once you are ready, press enter to spin ] :")
 
     while len(queue) > 0:
-        print("........................\n....... SPINNING .......\n........................")
+        print("\n........................\n....... SPINNING .......\n........................")
         sleep(3)
         print(".##..##...####...##..##.\n..####...##..##..##..##.\n...##....##..##..##..##.\n...##....##..##..##..##.\n...##.....####....####..\n........................")
         sleep(0.5)
         print("..####....####...######.\n.##......##..##....##...\n.##.###..##..##....##...\n.##..##..##..##....##...\n..####....####.....##...\n........................")
         sleep(0.5)
-        print("\n >>> [ " + queue.pop()['name'] + " ] <<<\n")
-        raw_input(get_prompt())
+        activity_ipr = queue.pop();
+        print("\n >>> [ " + activity_ipr['name'] + " for " + activity_ipr['length'] + " minutes ] <<<\n")
+        # sleep(3)
+        now = datetime.datetime.now()
+        print("Confirm completion of [ " + activity_ipr['name'] + " for " + activity_ipr['length'] + " minutes ] performed " + now.strftime("%a, %b %-d at %I:%M %p"))
+        if prompt_yes_no(get_prompt()):
+            with open("log.txt", "a+") as f:
+                f.write(now.strftime("%a, %b %-d, %Y %H:%I %p") + " - [ " + activity_ipr['name'] + " for " + activity_ipr['length'] + " minutes ]\n")
+        else:
+            pass
+        if (len(queue) > 0):
+            raw_input("\n[ " + str(len(queue)) + " tasks remaining. Press enter to spin again ] :")
+
+    print("All activities completed...")
 
 def create_queue():
     global num_activities
@@ -127,7 +135,7 @@ def create_queue():
         work_item = {
             "complete": False,
             "name": shortlist.pop(),
-            "message": log_message
+            "length": str(int(round(session_length / num_activities)))
         }
         queue.insert(0, work_item)
         num_activities -= 1
