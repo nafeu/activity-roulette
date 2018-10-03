@@ -78,45 +78,66 @@ def prompt_arrange_shortlist():
     else:
         shortlist = get_shortlist_by_input(user_input)
 
-    create_queue()
-    prompt_prepare_to_start()
+    print("\nAre you okay with these activities?\n")
+    for item in shortlist:
+        print("    " + item)
+
+    if prompt_yes_no(get_prompt()):
+        create_queue()
+        prompt_prepare_to_start()
+    else:
+        prompt_arrange_shortlist()
 
 def prompt_prepare_to_start():
     global queue
 
-    raw_input("\n[ Prepare your activity area. Once you are ready, press enter to spin ] :")
+    raw_input("\n[ Prepare your activity area. Once you are ready, press enter to spin ] : ")
 
     while len(queue) > 0:
-        print("\n........................\n....... SPINNING .......\n........................")
+        print("\n    ........................\n    ....... SPINNING .......\n    ........................")
         sleep(3)
-        print(".##..##...####...##..##.\n..####...##..##..##..##.\n...##....##..##..##..##.\n...##....##..##..##..##.\n...##.....####....####..\n........................")
+        print("    .##..##...####...##..##.\n    ..####...##..##..##..##.\n    ...##....##..##..##..##.\n    ...##....##..##..##..##.\n    ...##.....####....####..\n    ........................")
         sleep(0.5)
-        print("..####....####...######.\n.##......##..##....##...\n.##.###..##..##....##...\n.##..##..##..##....##...\n..####....####.....##...\n........................")
+        print("    ..####....####...######.\n    .##......##..##....##...\n    .##.###..##..##....##...\n    .##..##..##..##....##...\n    ..####....####.....##...\n    ........................")
         sleep(0.5)
         activity_ipr = queue.pop();
-        print("\n >>> [ " + activity_ipr['name'] + " for " + activity_ipr['length'] + " minutes ] <<<\n")
-        # sleep(3)
+        print("\n    " + activity_ipr['name'] + " for " + activity_ipr['length'] + " minutes")
+        print("\n    ........................\n    ........................")
         now = datetime.datetime.now()
-        print("Confirm completion of [ " + activity_ipr['name'] + " for " + activity_ipr['length'] + " minutes ] performed " + now.strftime("%a, %b %-d at %I:%M %p"))
-        if prompt_yes_no(get_prompt()):
+        sleep(5)
+        if prompt_yes_no("\n[ Upon completion, confirm: " + activity_ipr['name'] + " for " + activity_ipr['length'] + " minutes performed " + now.strftime("%a, %b %-d at %I:%M %p") + " ] : "):
+            print("(Activity logged)")
             with open("log.txt", "a+") as f:
                 f.write(now.strftime("%a, %b %-d, %Y %H:%I %p") + " - [ " + activity_ipr['name'] + " for " + activity_ipr['length'] + " minutes ]\n")
         else:
-            pass
+            print("(Activity discarded)")
         if (len(queue) > 0):
-            raw_input("\n[ " + str(len(queue)) + " tasks remaining. Press enter to spin again ] :")
+            raw_input("\n[ " + str(len(queue)) + " remaining. Press enter to spin again ] : ")
 
-    print("All activities completed...")
+    prompt_queue_empty()
+
+def prompt_queue_empty():
+    global session_length
+    global num_activities
+    session_length = DEFAULT_SESSION_LENGTH
+    num_activities = DEFAULT_NUM_ACTIVITIES
+
+    if prompt_yes_no("\nNo activites left, would you like to start again?\n\n> "):
+        prompt_initiate()
+    else:
+        print("\nThank you for using Activity Roulette.")
+
 
 def create_queue():
     global num_activities
 
     random.shuffle(shortlist)
+    length = str(int(round(session_length / num_activities)))
     while num_activities > 0 and len(shortlist) > 0:
         work_item = {
             "complete": False,
             "name": shortlist.pop(),
-            "length": str(int(round(session_length / num_activities)))
+            "length": length
         }
         queue.insert(0, work_item)
         num_activities -= 1
@@ -162,7 +183,7 @@ def display_activity_list():
     activities = load_from_file("activities.txt")
     print("")
     for index, value in enumerate(activities):
-        print("[" + str(index) + "] " + value)
+        print("    [" + str(index) + "] " + value)
 
 def get_random_activities(amount):
     activities = load_from_file("activities.txt")
@@ -176,7 +197,7 @@ def clear():
 def display_options(options):
     output = "\n"
     for index, value in enumerate(options):
-        output += "[" + ascii_lowercase[index] + "] " + value + "\n"
+        output += "    [" + ascii_lowercase[index] + "] " + value + "\n"
     output = output.rstrip()
     print(output)
 
@@ -184,7 +205,7 @@ def get_divider():
     return "  "
 
 def get_prompt():
-    return "> "
+    return "\n> "
 
 def main():
     print("Welcome to Activity Roulette!")
