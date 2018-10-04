@@ -91,15 +91,20 @@ def prompt_arrange_shortlist():
     else:
         shortlist = get_shortlist_by_input(user_input)
 
-    print("\nAre you okay with these activities? (y/n)\n")
-    for item in shortlist:
-        print("    " + item)
-
-    if prompt_yes_no(get_prompt()):
-        create_queue()
-        prompt_prepare_to_start()
-    else:
+    if len(shortlist) < 1:
+        print("\nNo items matched, please try again.")
         prompt_arrange_shortlist()
+    else:
+        print("\nAre you okay with these activities? (y/n)\n")
+        for item in shortlist:
+            print("    " + strip_item_tags(item))
+
+        if prompt_yes_no(get_prompt()):
+            create_queue()
+            prompt_prepare_to_start()
+        else:
+            prompt_arrange_shortlist()
+
 
 def prompt_prepare_to_start():
     global queue
@@ -140,7 +145,7 @@ def prompt_queue_empty():
     session_length = DEFAULT_SESSION_LENGTH
     num_activities = DEFAULT_NUM_ACTIVITIES
 
-    if prompt_yes_no("\nNo activites left, would you like to start again? (y/n)\n\n> "):
+    if prompt_yes_no("\nNo activities left, would you like to start again? (y/n)\n\n> "):
         prompt_initiate()
     else:
         print("\nThank you for using Activity Roulette.")
@@ -161,17 +166,31 @@ def create_queue():
         num_activities -= 1
 
 def get_shortlist_by_input(user_input):
-    if "," in user_input:
+    output = []
+    activities = load_from_file("activities.txt")
+
+    if "filter:" in user_input:
+        ids = get_activity_ids_by_tags(activities, [tag.strip() for tag in user_input.split(":")[1].split(",")])
+    elif "," in user_input:
         ids = list(set(user_input.split(",")))
     else:
         ids = list(set(user_input.split(" ")))
-    activities = load_from_file("activities.txt")
-    output = []
+
     for item in ids:
         if is_int(item):
             index = int(item)
             if index >= 0 and index < len(activities):
                 output.append(activities[index])
+
+    return output
+
+def get_activity_ids_by_tags(activities, input_tags):
+    output = []
+    for index, tags in enumerate([get_item_tags(item) for item in activities]):
+        for tag in tags:
+            if tag in input_tags:
+                output.append(index)
+                break
     return output
 
 def is_int(input_string):
@@ -203,7 +222,7 @@ def display_activity_list():
     activities = load_from_file("activities.txt")
     print("")
     for index, value in enumerate(activities):
-        print("    [" + str(index) + "] " + value)
+        print("    [" + str(index) + "] " + strip_item_tags(value))
 
 def get_random_activities(amount):
     activities = load_from_file("activities.txt")
@@ -226,6 +245,15 @@ def get_divider():
 
 def get_prompt():
     return "\n> "
+
+def get_item_tags(raw_item):
+    tags = raw_item.split(" (")
+    if len(tags) > 1:
+        return [item.strip() for item in tags[1].rstrip(")").split(",")]
+    return []
+
+def strip_item_tags(raw_item):
+    return raw_item.split(" (")[0]
 
 def includes_yes_utterance(user_input):
     if "y" in user_input:
