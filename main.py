@@ -13,6 +13,15 @@ num_activities = DEFAULT_NUM_ACTIVITIES
 shortlist = []
 queue = []
 
+def create_files():
+    for data_file in ["activities.txt", "log.txt"]:
+        if not os.path.exists(data_file):
+            with open(data_file, "w+") as f:
+                if data_file == "activities.txt":
+                    f.write("Edit activity list using 'aredit' command\n")
+                else:
+                    f.write("")
+
 def prompt_initiate():
     global session_length
 
@@ -21,6 +30,7 @@ def prompt_initiate():
     display_options(["10", "15", "25", "60"])
 
     valid = True
+
     user_input = raw_input(get_prompt())
     if (len(user_input) < 1):
         print("(Session length: " + str(session_length) + " minutes)")
@@ -73,12 +83,15 @@ def prompt_arrange_shortlist():
     display_activity_list()
 
     user_input = raw_input(get_prompt())
-    if (len(user_input) < 1):
+
+    if user_input.lower() == "q":
+        exit()
+    elif (len(user_input) < 1):
         shortlist = get_random_activities(DEFAULT_RANDOM_ACTIVITY_AMOUNT)
     else:
         shortlist = get_shortlist_by_input(user_input)
 
-    print("\nAre you okay with these activities?\n")
+    print("\nAre you okay with these activities? (y/n)\n")
     for item in shortlist:
         print("    " + item)
 
@@ -91,7 +104,10 @@ def prompt_arrange_shortlist():
 def prompt_prepare_to_start():
     global queue
 
-    raw_input("\n[ Prepare your activity area. Once you are ready, press enter to spin ] : ")
+    user_input = raw_input("\n[ Prepare your activity area. Once you are ready, press enter to spin ] : ")
+
+    if user_input.lower() == "q":
+        exit()
 
     while len(queue) > 0:
         print("\n    ........................\n    ....... SPINNING .......\n    ........................")
@@ -112,7 +128,9 @@ def prompt_prepare_to_start():
         else:
             print("(Activity discarded)")
         if (len(queue) > 0):
-            raw_input("\n[ " + str(len(queue)) + " remaining. Press enter to spin again ] : ")
+            user_input = raw_input("\n[ " + str(len(queue)) + " remaining. Press enter to spin again ] : ")
+            if user_input.lower() == "q":
+                exit()
 
     prompt_queue_empty()
 
@@ -122,7 +140,7 @@ def prompt_queue_empty():
     session_length = DEFAULT_SESSION_LENGTH
     num_activities = DEFAULT_NUM_ACTIVITIES
 
-    if prompt_yes_no("\nNo activites left, would you like to start again?\n\n> "):
+    if prompt_yes_no("\nNo activites left, would you like to start again? (y/n)\n\n> "):
         prompt_initiate()
     else:
         print("\nThank you for using Activity Roulette.")
@@ -143,7 +161,10 @@ def create_queue():
         num_activities -= 1
 
 def get_shortlist_by_input(user_input):
-    ids = list(set(user_input.split(" ")))
+    if "," in user_input:
+        ids = list(set(user_input.split(",")))
+    else:
+        ids = list(set(user_input.split(" ")))
     activities = load_from_file("activities.txt")
     output = []
     for item in ids:
@@ -163,12 +184,11 @@ def is_int(input_string):
 def display_invalid_input():
     print("Invalid input.")
 
-def prompt_add_tasks():
-    print("ADD TASKS")
-
 def prompt_yes_no(prompt_text):
     user_input = raw_input(prompt_text).lower()
-    if (user_input == "y" or user_input == "yes" or len(user_input) == 0):
+    if user_input == "q":
+        exit()
+    if (includes_yes_utterance(user_input) or len(user_input) == 0):
         return True
     else:
         return False
@@ -207,7 +227,13 @@ def get_divider():
 def get_prompt():
     return "\n> "
 
+def includes_yes_utterance(user_input):
+    if "y" in user_input:
+        return True
+    return False
+
 def main():
+    create_files()
     print("Welcome to Activity Roulette!")
     prompt_initiate()
 
