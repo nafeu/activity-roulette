@@ -169,8 +169,9 @@ def get_shortlist_by_input(user_input):
     output = []
     activities = load_from_file("activities.txt")
 
-    if "filter:" in user_input:
-        ids = get_activity_ids_by_tags(activities, [tag.strip() for tag in user_input.split(":")[1].split(",")])
+    ids_by_tag = get_activity_ids_by_tags(activities, [tag.strip() for tag in user_input.split(",")])
+    if len(ids_by_tag) > 0:
+        ids = ids_by_tag
     elif "," in user_input:
         ids = list(set(user_input.split(",")))
     else:
@@ -220,11 +221,14 @@ def load_from_file(file_name):
 
 def display_activity_list():
     activities = load_from_file("activities.txt")
-    print("")
+    available_tags = ", ".join(get_all_tags(activities)).rstrip()
+    print("\nAvailable tags: " + available_tags + "\n")
+
     for index, value in enumerate(activities):
         print("    [" + str(index) + "] " + strip_item_tags(value))
 
 def get_random_activities(amount):
+    print("(Randomly picking " + str(amount) + " activities for shortlist)")
     activities = load_from_file("activities.txt")
     if (amount > len(activities)):
         return activities
@@ -251,6 +255,15 @@ def get_item_tags(raw_item):
     if len(tags) > 1:
         return [item.strip() for item in tags[1].rstrip(")").split(",")]
     return []
+
+def get_all_tags(activities):
+    output = []
+    for activity in activities:
+        tag_split = activity.split(" (")
+        if len(tag_split) > 1:
+            for tag in tag_split[1].rstrip(")").split(","):
+                output.append(tag.strip())
+    return list(set(output))
 
 def strip_item_tags(raw_item):
     return raw_item.split(" (")[0]

@@ -44,7 +44,7 @@ Activity 3 (tagB)
 
 With each activity on its own line and optional tags added in brackets as shown above.
 
-When selecting your shortlist, you can filter by tags by using `filter:` for example:
+When selecting your shortlist, you can type numbers or tags separated by `,`, for example:
 
 ```
 ...
@@ -54,7 +54,7 @@ Arrange Your Shortlist
     [1] Activity 2
     [2] Activity 3
 
-> filter:tagB
+> tagB
 
 Are you okay with these activities? (y/n)
 
