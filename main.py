@@ -214,10 +214,15 @@ def prompt_yes_no(prompt_text):
         return False
 
 def load_from_file(file_name):
-    with open("activities.txt") as f:
+    with open(file_name) as f:
         content = f.readlines()
-    content = [x.strip() for x in content]
+    content = [x.strip() for x in content if is_valid_activity(x)]
     return content
+
+def is_valid_activity(activity):
+    if len(activity) < 2 or activity[0] == "#":
+        return False
+    return True
 
 def display_activity_list():
     activities = load_from_file("activities.txt")

@@ -37,12 +37,13 @@ Run the `argo`, `arlog` and `aredit` alias commands in your shell.
 When editing the `activities.txt` file, follow this format:
 
 ```
+# Comments
 Activity 1
 Activity 2 (tagA, tagB, tagC)
 Activity 3 (tagB)
 ```
 
-With each activity on its own line and optional tags added in brackets as shown above.
+With each activity on its own line, comments preceded by `#`, and optional tags added in brackets.
 
 When selecting your shortlist, you can type numbers or tags separated by `,`, for example:
 
